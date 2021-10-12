@@ -1,10 +1,10 @@
 /***************************************************************
 * file: FPCameraController.java
-* author: (insert name)
+* author(s): Selim Frljuckic, Lina Kang, Michael Holzer, and Levan Pham
 * class: CS 4450 – Computer Graphics
 *
 * assignment: Final Project
-* date last modified: 
+* date last modified: 10/11/2021
 *
 * purpose:  This class allows the player to control the camera through
 *           keyboard input as well as rendering object in that cameras view
