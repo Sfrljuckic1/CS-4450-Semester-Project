@@ -31,6 +31,8 @@ import org.lwjgl.Sys;
 
 
 public class FPCameraController {
+    private Chunk chunkObject = null;
+    
     private Vector3f position = null;
     private Vector3f lPosition = null;
     
@@ -47,6 +49,7 @@ public class FPCameraController {
         lPosition.x = 0f;
         lPosition.y = 15f;
         lPosition.z = 0f;
+        chunkObject = new Chunk(0,0,0);
     }
     
     //increments the camera's current yaw rotation
@@ -130,6 +133,7 @@ public class FPCameraController {
         //hides the mouse and keeps it confined within the window
         Mouse.setGrabbed(true);
 
+        chunkObject.render();
        
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
         time = Sys.getTime();
