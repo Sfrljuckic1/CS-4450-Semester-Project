@@ -7,6 +7,7 @@
 * date last modified: 10/11/2021
 *
 * purpose: This class stores the cameras position in 3D space.
+* 
 ****************************************************************/
 package Minecraft_Demo;
 

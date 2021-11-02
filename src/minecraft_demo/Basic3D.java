@@ -11,6 +11,7 @@
 *           This program uses the LWJGL to render a Minecraft like
  *          scene and allows the player to navigate the scene using
  *          keyboard commands.
+ * 
 ****************************************************************/
 package Minecraft_Demo;
 import org.lwjgl.input.Keyboard;
@@ -52,7 +53,7 @@ public class Basic3D {
             }
         }
         Display.setDisplayMode(displayMode);
-        Display.setTitle("Minecraft???");
+        Display.setTitle("Minecraft");
         Display.create();
     }
     //method: initGL

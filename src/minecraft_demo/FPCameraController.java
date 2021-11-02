@@ -30,7 +30,7 @@ import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.Sys;
 
 
-public class FPCameraController {
+public class FPCameraController {    
     private Vector3f position = null;
     private Vector3f lPosition = null;
     
@@ -39,6 +39,8 @@ public class FPCameraController {
     //the rotation around the X axis of the camera
     private float pitch = 0.0f;
     private Vector3Float me;
+    
+    private Chunk chunkObject = new Chunk(0,0,0);
     
     //FPCameraController method initializes the constructor value
     public FPCameraController(float x, float y, float z){ //instantiate position Vector3f to the x y z params.
@@ -129,7 +131,6 @@ public class FPCameraController {
         
         //hides the mouse and keeps it confined within the window
         Mouse.setGrabbed(true);
-
        
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
         time = Sys.getTime();
@@ -188,14 +189,31 @@ public class FPCameraController {
         camera.lookThrough();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        //renders the chunk of the scene
+        chunkObject.render();
+        
         //draws the scene below with the rendered cube
-        renderCube();
+        //renderCube();
         
         //draw the buffer to the screen
         Display.update();
         Display.sync(60);
         }
     Display.destroy();
+    }
+    
+    //renders a square
+    private void render() {
+    try{
+        glBegin(GL_QUADS);
+        glColor3f(2.0f,0.0f,2.0f);
+        glVertex3f( 1.0f,-2.0f,-1.0f);
+        glVertex3f(-1.0f,-2.0f,-1.0f);
+        glVertex3f(-1.0f, 2.0f,-1.0f);
+        glVertex3f( 1.0f, 2.0f,-1.0f);
+        glEnd();
+        }
+    catch(Exception e){}
     }
 
     //renders a cube
