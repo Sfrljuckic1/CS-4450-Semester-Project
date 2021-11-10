@@ -24,7 +24,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Chunk {
 
-    static final int CHUNK_SIZE = 30;
+    static final int CHUNK_SIZE = 60;
     static final int CUBE_LENGTH = 2;
     static final float minPersistance = 0.03f;
     static final float maxPersistance = 0.06f;
@@ -67,7 +67,7 @@ public class Chunk {
         
         FloatBuffer VertexPositionData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
         FloatBuffer VertexColorData    = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
-        FloatBuffer VertexTextureData = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
+        FloatBuffer VertexTextureData  = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
         
         float height;
         for(float x = 0; x < CHUNK_SIZE; x++)
@@ -83,7 +83,7 @@ public class Chunk {
                 {
                     VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH) + (float)(CHUNK_SIZE*1.5)));
                     VertexColorData.put(createCubeVertexCol(getCubeColor(Blocks[(int)x][(int)y][(int)z])));
-                    VertexTextureData.put(createTexCube(0, 0, Blocks[(int)(x)][(int) (y)][(int) (z)]));
+                    VertexTextureData.put(createTexCube(0, 0, Blocks[(int)(x)][(int) (y)][(int) (z)], y, height));
                 }
             }
         }
@@ -192,7 +192,8 @@ public class Chunk {
                     }
                 }
             }
-        }
+        }   
+        
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();
@@ -203,27 +204,54 @@ public class Chunk {
     }
     
     //tells how to texure each type of block
-    public static float[] createTexCube(float x, float y, Block block) {
+    public static float[] createTexCube(float x, float y, Block block, float currentY, float height) {
         float offset = (1024f/16)/1024f;
-        switch (block.GetID()) {
-            case 0:
-                return cubeTex(x,y,offset,3,10,4,1,3,1);
-            case 1:
-                return cubeTex(x,y,offset,3,2,3,2,3,2);
-            case 2:
-                return cubeTex(x,y,offset,15,13,15,13,15,13);
-            case 3:
-                return cubeTex(x,y,offset,3,1,3,1,3,1);
-            case 4:
-                return cubeTex(x,y,offset,2,1,2,1,2,1);
-            case 5:
-                return cubeTex(x,y,offset,2,2,2,2,2,2);
-            case 6:
-                return cubeTex(x,y,offset,10,10,10,10,10,10);
-            default:
-                System.out.println("not found");
-                return null;
-        }
+        
+        if(currentY == height-2)
+            return cubeTex(x,y,offset,3,1,3,1,3,1);
+        else if(currentY == height-1)
+            return cubeTex(x,y,offset,3,10,4,1,3,1);
+        
+//        currentY++;
+//        height++;
+        
+        // height = 7
+        float level = currentY/height;
+        
+        if(level <= 0.3)
+            return cubeTex(x,y,offset,2,2,2,2,2,2);
+        else if(level <= 0.5)
+            return cubeTex(x,y,offset,2,1,2,1,2,1);
+        else if(level <= 0.85)
+            return cubeTex(x,y,offset,3,1,3,1,3,1);
+        else if(level <= 1)
+            return cubeTex(x,y,offset,3,10,4,1,3,1);
+        else
+            System.out.println("not found");
+            return null; 
+
+        
+
+        
+//        switch (block.GetID()) {
+//            case 0: //Grass
+//                return cubeTex(x,y,offset,3,10,4,1,3,1);
+//            case 1: //Sand
+//                return cubeTex(x,y,offset,3,2,3,2,3,2);
+//            case 2: //Water
+//                return cubeTex(x,y,offset,15,13,15,13,15,13);
+//            case 3: //Dirt
+//                return cubeTex(x,y,offset,3,1,3,1,3,1);
+//            case 4: //Stone
+//                return cubeTex(x,y,offset,2,1,2,1,2,1);
+//            case 5: //Bedrock
+//                return cubeTex(x,y,offset,2,2,2,2,2,2);
+//            case 6: //Default
+//                return cubeTex(x,y,offset,10,10,10,10,10,10);
+//            default:
+//                System.out.println("not found");
+//                return null;
+//        }
         
 
     }
