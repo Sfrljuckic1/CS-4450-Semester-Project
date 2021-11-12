@@ -89,7 +89,8 @@ public class Basic3D {
         glEnable(GL_LIGHTING);//enables our lighting
         glEnable(GL_LIGHT0);//enables light0
     }
-    
+    //method: initLightArrays
+    //purpose: initiates information about lighting such as position, specular, diffuse, and ambient light
     private void initLightArrays() {
         lightPosition = BufferUtils.createFloatBuffer(4);
         lightPosition.put(-5.0f).put(-5.0f).put(-5.0f).put(1.0f).flip();

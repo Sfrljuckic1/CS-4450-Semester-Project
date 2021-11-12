@@ -176,24 +176,31 @@ public class Chunk {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
-                    if(r.nextFloat()>0.8f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
-                    }else if(r.nextFloat()>0.6f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
-                    }else if(r.nextFloat()>0.4f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
-                    }else if(r.nextFloat()>0.2f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
-                    }else if(r.nextFloat()>0.1f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
-                    }else if(r.nextFloat()>0.0f){
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
-                    }else{
-                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
-                    }
+                    Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
                 }
             }
         }   
+//        for (int x = 0; x < CHUNK_SIZE; x++) {
+//            for (int y = 0; y < CHUNK_SIZE; y++) {
+//                for (int z = 0; z < CHUNK_SIZE; z++) {
+//                    if(r.nextFloat()>0.8f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
+//                    }else if(r.nextFloat()>0.6f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
+//                    }else if(r.nextFloat()>0.4f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
+//                    }else if(r.nextFloat()>0.2f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
+//                    }else if(r.nextFloat()>0.1f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
+//                    }else if(r.nextFloat()>0.0f){
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
+//                    }else{
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
+//                    }
+//                }
+//            }
+//        }   
         
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
@@ -204,7 +211,9 @@ public class Chunk {
         rebuildMesh(startX, startY, startZ);
     }
     
-    //tells how to texure each type of block
+    //method: createTexCube
+    //purpose: based on the current height of the block in the chunk, determines
+    //         what type of block texture should be given (lower: bedrock, stone. higher: dirt, grass)
     public static float[] createTexCube(float x, float y, Block block, float currentY, float height) {
         float offset = (1024f/16)/1024f;
         
@@ -212,9 +221,6 @@ public class Chunk {
             return cubeTex(x,y,offset,3,1,3,1,3,1);
         else if(currentY == height-1)
             return cubeTex(x,y,offset,3,10,4,1,3,1);
-        
-//        currentY++;
-//        height++;
         
         // height = 7
         float level = currentY/height;
@@ -231,9 +237,6 @@ public class Chunk {
             System.out.println("not found");
             return null; 
 
-        
-
-        
 //        switch (block.GetID()) {
 //            case 0: //Grass
 //                return cubeTex(x,y,offset,3,10,4,1,3,1);

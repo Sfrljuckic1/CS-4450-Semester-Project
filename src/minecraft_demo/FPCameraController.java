@@ -48,8 +48,8 @@ public class FPCameraController {
     public FPCameraController(float x, float y, float z){ //instantiate position Vector3f to the x y z params.
         position = new Vector3f(x, y, z);
         lPosition = new Vector3f(x,y,z);
-        lPosition.x = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH;
-        lPosition.y = chunkObject.CHUNK_SIZE;
+        lPosition.x = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH + chunkObject.CHUNK_SIZE;
+        lPosition.y = (chunkObject.CHUNK_SIZE)/2;
         lPosition.z = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH + chunkObject.CHUNK_SIZE;
     }
     
@@ -214,10 +214,11 @@ public class FPCameraController {
 
         //renders the chunk of the scene
         chunkObject.render();
-        
+
         //draw the buffer to the screen
         Display.update();
         Display.sync(60);
+        
         }
     Display.destroy();
     }
