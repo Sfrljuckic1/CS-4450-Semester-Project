@@ -26,6 +26,7 @@ public class Chunk {
 
     static final int CHUNK_SIZE = 60;
     static final int CUBE_LENGTH = 2;
+    static final int WATER_LEVEL = CHUNK_SIZE/15;
     static final float minPersistance = 0.03f;
     static final float maxPersistance = 0.06f;
     private Block[][][] Blocks;
@@ -84,7 +85,27 @@ public class Chunk {
                 {
                     VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH) + (float)(CHUNK_SIZE*1.5)));
                     VertexColorData.put(createCubeVertexCol(getCubeColor(Blocks[(int)x][(int)y][(int)z])));
-                    VertexTextureData.put(createTexCube(0, 0, Blocks[(int)(x)][(int) (y)][(int) (z)], y, height));
+                    VertexTextureData.put(createTexCube(0, 0, Blocks[(int)(x)][(int)(y)][(int) (z)], y, height));
+                }
+            }
+        }
+        
+        //Water Placement
+        
+        for(int x = 0; x < CHUNK_SIZE; x++)
+        {
+            for(int z = 0; z < CHUNK_SIZE; z++)
+            {
+                for(int y = 0; y < WATER_LEVEL; y++)
+                {
+                    if(!((Blocks[x][y][z]).IsActive()))
+                    {
+                        VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH) + (float)(CHUNK_SIZE*1.5)));
+                        VertexColorData.put(createCubeVertexCol(getCubeColor(Blocks[(int)x][(int)y][(int)z])));
+                        VertexTextureData.put(cubeTex(0,0,(1024f/16)/1024f,15,13,15,13,15,13));  
+                        Blocks[x][y][z].SetActive(true);
+                    }
+
                 }
             }
         }
@@ -217,6 +238,11 @@ public class Chunk {
     public static float[] createTexCube(float x, float y, Block block, float currentY, float height) {
         float offset = (1024f/16)/1024f;
         
+//        if(currentY <= CHUNK_SIZE/15)
+//            return cubeTex(x,y,offset,15,13,15,13,15,13);
+        
+        block.SetActive(true);
+
         if(currentY == height-2)
             return cubeTex(x,y,offset,3,1,3,1,3,1);
         else if(currentY == height-1)
