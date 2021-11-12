@@ -48,9 +48,9 @@ public class FPCameraController {
     public FPCameraController(float x, float y, float z){ //instantiate position Vector3f to the x y z params.
         position = new Vector3f(x, y, z);
         lPosition = new Vector3f(x,y,z);
-        lPosition.x = 0f;
-        lPosition.y = 15f;
-        lPosition.z = 0f;
+        lPosition.x = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH;
+        lPosition.y = chunkObject.CHUNK_SIZE;
+        lPosition.z = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH + chunkObject.CHUNK_SIZE;
     }
     
     //increments the camera's current yaw rotation
@@ -73,9 +73,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera backward relative to its current rotation (yaw)
@@ -85,9 +85,9 @@ public class FPCameraController {
         position.x += xOffset;
         position.z -= zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x+=xOffset).put(lPosition.y).put(lPosition.z-=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x+=xOffset).put(lPosition.y).put(lPosition.z-=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera left relative to its current rotation (yaw)
@@ -97,9 +97,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera right relative to its current rotation (yaw)
@@ -109,9 +109,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera up relative to its current rotation (yaw)
@@ -137,6 +137,7 @@ public class FPCameraController {
         FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
         lightPosition.put(lPosition.x).put(lPosition.y).put(lPosition.z).put(1.0f).flip();
         glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+
     }
     
     //processes camera controls
@@ -210,12 +211,9 @@ public class FPCameraController {
         //look through the camera before you draw anything
         camera.lookThrough();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+
         //renders the chunk of the scene
         chunkObject.render();
-        
-        //draws the scene below with the rendered cube
-        //renderCube();
         
         //draw the buffer to the screen
         Display.update();
@@ -287,7 +285,6 @@ public class FPCameraController {
             glVertex3f(x, x,  x);
             glVertex3f(x, x, -x);
 
-        
         glEnd();  
 
   
