@@ -73,9 +73,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera backward relative to its current rotation (yaw)
@@ -85,9 +85,9 @@ public class FPCameraController {
         position.x += xOffset;
         position.z -= zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x+=xOffset).put(lPosition.y).put(lPosition.z-=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x+=xOffset).put(lPosition.y).put(lPosition.z-=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera left relative to its current rotation (yaw)
@@ -97,9 +97,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera right relative to its current rotation (yaw)
@@ -109,9 +109,9 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
         
-        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
-        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
     
     //moves the camera up relative to its current rotation (yaw)
@@ -135,6 +135,9 @@ public class FPCameraController {
         glTranslatef(position.x, position.y, position.z);
         
         FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+        lPosition.x=chunkObject.CHUNK_SIZE * chunkObject.CUBE_LENGTH+ chunkObject.CHUNK_SIZE;
+        lPosition.y=(chunkObject.CHUNK_SIZE)/2;
+        lPosition.z=chunkObject.CHUNK_SIZE * chunkObject.CUBE_LENGTH+ chunkObject.CHUNK_SIZE;
         lightPosition.put(lPosition.x).put(lPosition.y).put(lPosition.z).put(1.0f).flip();
         glLight(GL_LIGHT0, GL_POSITION, lightPosition);
     }
