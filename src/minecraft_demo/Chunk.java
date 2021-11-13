@@ -37,6 +37,7 @@ public class Chunk {
     private Random random = new Random();
     private Random r;
     
+    
     //Chunk Render Method
     public void render() {
         glPushMatrix();
@@ -115,7 +116,7 @@ public class Chunk {
     
     public static float[] createCube(float x, float y, float z)
     {
-        int offset = CUBE_LENGTH / 2;
+        float offset = CUBE_LENGTH / 2;
         
         return new float[]
         {

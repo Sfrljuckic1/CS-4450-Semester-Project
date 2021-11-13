@@ -29,6 +29,8 @@ public class Basic3D {
     
     private FloatBuffer lightPosition;
     private FloatBuffer whiteLight;
+    private FloatBuffer ambientLight;
+    private FloatBuffer diffuseLight;
 
     
     //method: start
@@ -82,17 +84,24 @@ public class Basic3D {
         initLightArrays();
         glLight(GL_LIGHT0, GL_POSITION, lightPosition); //sets our light’s position
         glLight(GL_LIGHT0, GL_SPECULAR, whiteLight);//sets our specular light
-        glLight(GL_LIGHT0, GL_DIFFUSE, whiteLight);//sets our diffuse light
-        glLight(GL_LIGHT0, GL_AMBIENT, whiteLight);//sets our ambient light
+        glLight(GL_LIGHT0, GL_DIFFUSE, diffuseLight);//sets our diffuse light
+        glLight(GL_LIGHT0, GL_AMBIENT, ambientLight);//sets our ambient light
         glEnable(GL_LIGHTING);//enables our lighting
         glEnable(GL_LIGHT0);//enables light0
     }
     
     private void initLightArrays() {
         lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
+        lightPosition.put(-5.0f).put(-5.0f).put(-5.0f).put(1.0f).flip();
+        
         whiteLight = BufferUtils.createFloatBuffer(4);
-        whiteLight.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
+        whiteLight.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+        
+        ambientLight = BufferUtils.createFloatBuffer(4);
+        ambientLight.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
+        
+        diffuseLight = BufferUtils.createFloatBuffer(4);
+        diffuseLight.put(0.8f).put(0.8f).put(0.8f).put(1.0f).flip();
     }
 
     //method: main
