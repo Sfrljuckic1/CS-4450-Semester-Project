@@ -73,7 +73,8 @@ public class Basic3D {
         glEnableClientState(GL_COLOR_ARRAY);
         glEnable(GL_DEPTH_TEST);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
+        
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         GLU.gluPerspective(100.0f, (float)displayMode.getWidth()/(float)
@@ -84,8 +85,8 @@ public class Basic3D {
         initLightArrays();
         glLight(GL_LIGHT0, GL_POSITION, lightPosition); //sets our light’s position
         glLight(GL_LIGHT0, GL_SPECULAR, whiteLight);//sets our specular light
-        glLight(GL_LIGHT0, GL_DIFFUSE, diffuseLight);//sets our diffuse light
-        glLight(GL_LIGHT0, GL_AMBIENT, ambientLight);//sets our ambient light
+        glLight(GL_LIGHT0, GL_DIFFUSE, whiteLight);//sets our diffuse light
+        glLight(GL_LIGHT0, GL_AMBIENT, whiteLight);//sets our ambient light
         glEnable(GL_LIGHTING);//enables our lighting
         glEnable(GL_LIGHT0);//enables light0
     }
@@ -93,7 +94,7 @@ public class Basic3D {
     //purpose: initiates information about lighting such as position, specular, diffuse, and ambient light
     private void initLightArrays() {
         lightPosition = BufferUtils.createFloatBuffer(4);
-        lightPosition.put(-5.0f).put(-5.0f).put(-5.0f).put(1.0f).flip();
+        lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
         
         whiteLight = BufferUtils.createFloatBuffer(4);
         whiteLight.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();

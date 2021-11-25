@@ -24,20 +24,21 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Chunk {
 
-    static final int CHUNK_SIZE = 60;
-    static final int CUBE_LENGTH = 2;
-    static final int WATER_LEVEL = CHUNK_SIZE/15;
-    static final float minPersistance = 0.03f;
-    static final float maxPersistance = 0.06f;
+    static final int CHUNK_SIZE = 100;
+    static final int CUBE_LENGTH = 1;
+    static final int WATER_LEVEL = (int) (CHUNK_SIZE/2.0f);
+    static final float minPersistance = 0.09f;//(float) (CHUNK_SIZE * 0.0006);
+    static final float maxPersistance = 0.12f;//(float) (CHUNK_SIZE * 0.0015);
     private Block[][][] Blocks;
     private int VBOVertexHandle;
     private int VBOColorHandle;
     private int StartX, StartY, StartZ;
     private int VBOTextureHandle;
     private Texture texture;
-    private Random random = new Random();
+    private static Random random = new Random();
     private Random r;
     
+    private String textureFileName = "terrain2.png";
     
     //Chunk Render Method
     public void render() {
@@ -71,7 +72,7 @@ public class Chunk {
         FloatBuffer VertexColorData    = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
         FloatBuffer VertexTextureData  = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)*6*12);
         
-        float height;
+        float height = 0;
         for(float x = 0; x < CHUNK_SIZE; x++)
         {
             for(float z = 0; z < CHUNK_SIZE; z++)
@@ -79,28 +80,34 @@ public class Chunk {
                 // Height Randomization
                 int i = (int)(startX + x * ((300 - startX)/ 640));
                 int j = (int)(startZ + z * ((300 - startZ)/ 480));
-                height = 1+Math.abs((startY + (int) (100 * noise.getNoise(i, j))* CUBE_LENGTH));
+                do
+                {
+                    height = 1+Math.abs((startY + CHUNK_SIZE/2.0f + (int) (100 * noise.getNoise(i, j))));
+                }while(height > CHUNK_SIZE);
+                    
                 
                 for(float y = 0; y < height; y++)
                 {
-                    VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH) + (float)(CHUNK_SIZE*1.5)));
+                    Blocks[(int)(x)][(int)(y)][(int) (z)] = new Block(Block.BlockType.BlockType_Grass);
+                    VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y * CUBE_LENGTH +(float)(CHUNK_SIZE * -1.5)),(startZ + z * CUBE_LENGTH)));// + (float)(CHUNK_SIZE*1.5)));
                     VertexColorData.put(createCubeVertexCol(getCubeColor(Blocks[(int)x][(int)y][(int)z])));
                     VertexTextureData.put(createTexCube(0, 0, Blocks[(int)(x)][(int)(y)][(int) (z)], y, height));
                 }
             }
         }
-        
+
         //Water Placement
         
         for(int x = 0; x < CHUNK_SIZE; x++)
         {
             for(int z = 0; z < CHUNK_SIZE; z++)
             {
-                for(int y = 0; y < WATER_LEVEL; y++)
+                for(int y = 0; y < WATER_LEVEL-1; y++)
                 {
-                    if(!((Blocks[x][y][z]).IsActive()))
+                    if(Blocks[x][y][z] == null)
                     {
-                        VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH) + (float)(CHUNK_SIZE*1.5)));
+                        Blocks[(int)(x)][(int)(y)][(int) (z)] = new Block(Block.BlockType.BlockType_Water);
+                        VertexPositionData.put(createCube((startX + x * CUBE_LENGTH), (y*CUBE_LENGTH+(float)(CHUNK_SIZE*-1.5)),(startZ+z*CUBE_LENGTH)));// + (float)(CHUNK_SIZE*1.5)));
                         VertexColorData.put(createCubeVertexCol(getCubeColor(Blocks[(int)x][(int)y][(int)z])));
                         VertexTextureData.put(cubeTex(0,0,(1024f/16)/1024f,15,13,15,13,15,13));  
                         Blocks[x][y][z].SetActive(true);
@@ -109,6 +116,7 @@ public class Chunk {
                 }
             }
         }
+        
         
         VertexTextureData.flip();
         VertexColorData.flip();
@@ -137,7 +145,7 @@ public class Chunk {
     
     public static float[] createCube(float x, float y, float z)
     {
-        float offset = CUBE_LENGTH / 2;
+        float offset = CUBE_LENGTH / 2.0f;
         
         return new float[]
         {
@@ -186,7 +194,7 @@ public class Chunk {
 
     public Chunk(int startX, int startY, int startZ) {
         try{
-            texture = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream("terrain.png"));
+            texture = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream(textureFileName));
         }
         catch(Exception e){
             System.out.print("ER-ROAR!");
@@ -194,13 +202,15 @@ public class Chunk {
         
         r= new Random();
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        /*
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
                 }
             }
-        }   
+        } 
+*/
 //        for (int x = 0; x < CHUNK_SIZE; x++) {
 //            for (int y = 0; y < CHUNK_SIZE; y++) {
 //                for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -244,21 +254,45 @@ public class Chunk {
         block.SetActive(true);
 
         if(currentY == height-2)
-            return cubeTex(x,y,offset,3,1,3,1,3,1);
+            return cubeTex(x,y,offset,3,1,3,1,3,1); // dirtz
         else if(currentY == height-1)
-            return cubeTex(x,y,offset,3,10,4,1,3,1);
+        {
+            if(currentY < WATER_LEVEL)
+                return cubeTex(x,y,offset,3,2,3,2,3,2); // sand
+            else
+            {
+                int rand = random.nextInt(100);
+                if(rand < 60)
+                    return cubeTex(x,y,offset,3,10,4,1,3,1); // grass
+                else if(rand < 90)
+                    return cubeTex(x,y,offset,2,10,4,1,3,1);
+                else if(rand < 99)
+                {
+                    rand = random.nextInt(3)+1;
+                    switch(rand){
+                        case 1:
+                            return cubeTex(x,y,offset,3,9,4,1,3,1); // red flower
+                        case 2:
+                            return cubeTex(x,y,offset,3,8,4,1,3,1); // blue flower
+                        case 3:
+                            return cubeTex(x,y,offset,2,8,4,1,3,1); // yellow flower
+                    }
+                    
+                }
+                else
+                    return cubeTex(x,y,offset,2,9,4,1,3,1); // cake
+            }
+        }
         
         // height = 7
         float level = currentY/height;
         
-        if(level <= 0.3)
+        if(level <= 0.5)
             return cubeTex(x,y,offset,2,2,2,2,2,2);
-        else if(level <= 0.5)
+        else if(level <= 0.7)
             return cubeTex(x,y,offset,2,1,2,1,2,1);
-        else if(level <= 0.85)
-            return cubeTex(x,y,offset,3,1,3,1,3,1);
         else if(level <= 1)
-            return cubeTex(x,y,offset,3,10,4,1,3,1);
+            return cubeTex(x,y,offset,3,1,3,1,3,1);
         else
             System.out.println("not found");
             return null; 
@@ -322,6 +356,21 @@ public class Chunk {
             x + offset*(xSide-1), y + offset*(ySide-1),
             x + offset*(xSide-1), y + offset*ySide,
             x + offset*xSide, y + offset*ySide};
+    }
+    
+    public boolean IsThereBlockAtThisXY(float x, float y, float z)
+    {
+//        int x_int = (int) x;
+//        int y_int = (int) y;
+//        int z_int = (int) z;
+        
+//        Block blk = Blocks[(int) x][(int) y][(int) z];
+
+        
+        if(Blocks[(int) (x/CUBE_LENGTH)][(int) (y - (float)(CHUNK_SIZE*-1.5))/CUBE_LENGTH][(int)(z/CUBE_LENGTH)] == null)
+            return false;
+        else
+            return true;
     }
     
     

@@ -23,6 +23,7 @@ package Minecraft_Demo;
 // import java.util.concurrent.TimeUnit;
 // import java.util.logging.Logger;
 import java.nio.FloatBuffer;
+import java.time.LocalDateTime;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.input.Keyboard;
@@ -44,12 +45,17 @@ public class FPCameraController {
     
     private Chunk chunkObject = new Chunk(0,0,0);
     
+    // background colors
+    private float r = 0.7f;
+    private float g = 0.9f;
+    private float b = 1.0f;
+    
     //FPCameraController method initializes the constructor value
     public FPCameraController(float x, float y, float z){ //instantiate position Vector3f to the x y z params.
         position = new Vector3f(x, y, z);
         lPosition = new Vector3f(x,y,z);
         lPosition.x = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH + chunkObject.CHUNK_SIZE;
-        lPosition.y = (chunkObject.CHUNK_SIZE)/2;
+        lPosition.y = (chunkObject.CHUNK_SIZE)/5;
         lPosition.z = chunkObject.CHUNK_SIZE *chunkObject.CUBE_LENGTH + chunkObject.CHUNK_SIZE;
     }
     
@@ -72,6 +78,7 @@ public class FPCameraController {
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
         position.x -= xOffset;
         position.z += zOffset;
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
         
 //        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
 //        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
@@ -84,6 +91,7 @@ public class FPCameraController {
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
         position.x += xOffset;
         position.z -= zOffset;
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
         
 //        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
 //        lightPosition.put(lPosition.x+=xOffset).put(lPosition.y).put(lPosition.z-=zOffset).put(1.0f).flip();
@@ -96,6 +104,7 @@ public class FPCameraController {
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw-90));
         position.x -= xOffset;
         position.z += zOffset;
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
         
 //        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
 //        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
@@ -108,6 +117,7 @@ public class FPCameraController {
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));
         position.x -= xOffset;
         position.z += zOffset;
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
         
 //        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
 //        lightPosition.put(lPosition.x-=xOffset).put(lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
@@ -117,11 +127,16 @@ public class FPCameraController {
     //moves the camera up relative to its current rotation (yaw)
     public void moveUp(float distance){
         position.y -= distance;
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
     }
     
     //moves the camera down relative to its current rotation (yaw)
     public void moveDown(float distance){
-     position.y += distance;
+//        if(chunkObject.IsThereBlockAtThisXY(position.x, position.y + distance, position.z))    
+            position.y += distance;
+            
+//        System.out.format("%.3f", pi);     // -->  "3.142"
+//        System.out.format("x: %.3f y: %.3f z: %.3f%n", position.x, position.y, position.z);
     }
     
     //translates and rotates the matrix so that it looks through the camera
@@ -142,6 +157,8 @@ public class FPCameraController {
     
     //processes camera controls
     public void gameLoop() throws InterruptedException{
+        
+        boolean sunComeUp = true;
     
         FPCameraController camera = new FPCameraController(0, 0, 0);
         float dx = 0.0f;
@@ -152,10 +169,15 @@ public class FPCameraController {
         float mouseSensitivity = 0.09f;
         float movementSpeed = .35f;
         
+        LocalDateTime now = LocalDateTime.now();
+        
         //hides the mouse and keeps it confined within the window
         Mouse.setGrabbed(true);
        
         while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
+            
+            glClearColor(r, g, b, 1.0f);
+            
         time = Sys.getTime();
         lastTime = time;
         
@@ -206,6 +228,12 @@ public class FPCameraController {
                 camera.moveDown(movementSpeed);
             }
             
+            //Press Q to rebuild a whole new chunk IN-GAME
+            if(Keyboard.isKeyDown(Keyboard.KEY_Q))
+            {
+                chunkObject = new Chunk(0,0,0);
+            }
+            
         //set the modelview matrix back to the identity
         glLoadIdentity();
         //look through the camera before you draw anything
@@ -218,6 +246,27 @@ public class FPCameraController {
         //draw the buffer to the screen
         Display.update();
         Display.sync(60);
+        
+        if(sunComeUp != true && LocalDateTime.now().getMinute() - now.getMinute() != 0)
+        {
+            if(r > 0.0f) r -= 0.01f;
+            if(g > 0.0f) g -= 0.01f;
+            if(b > 0.0f) b -= 0.01f;
+            now = LocalDateTime.now();
+        }
+        else if(sunComeUp && LocalDateTime.now().getMinute() - now.getMinute() != 0)
+        {
+            if(r < 0.7f) r += 0.01f;
+            if(g < 0.9f) g += 0.01f;
+            if(b < 1.0f) b += 0.01f;
+            now = LocalDateTime.now();
+        }
+        
+        if(r <= 0.01f && g <= 0.01f && b <= 0.01f)
+            sunComeUp = true;
+        else if(r >= 0.699f && g >= 0.899f && b >= 0.999f)
+            sunComeUp = false;
+
         
         }
     Display.destroy();
