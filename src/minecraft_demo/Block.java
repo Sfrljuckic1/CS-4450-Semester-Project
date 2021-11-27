@@ -24,7 +24,7 @@ public class Block {
         BlockType_Stone(4),
         BlockType_Bedrock(5),
         BlockType_Flower(6),
-        BlockType_Default(6);
+        BlockType_Default(7);
         
         private int BlockID;
         
