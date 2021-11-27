@@ -72,6 +72,25 @@ public class Basic3D {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnable(GL_DEPTH_TEST);
+        
+        //FOG Functionality
+        //initiates fog specifications for final checkpoint requirements (extra functionalities)
+        //the fog color is set to the starting glClearColor values to match the environments tone
+        //these values can be changed or developed in further iterations to match the lighting
+        //as it changes over time thanks to our separate lighting functionality
+        glEnable(GL_FOG);
+{
+        FloatBuffer fogColor = BufferUtils.createFloatBuffer(4);
+        fogColor.put(0.7f).put(0.9f).put(1.0f).put(1.0f).flip();
+
+        int fogMode = GL_EXP;
+        glFogi(GL_FOG_MODE, fogMode);
+        glFog(GL_FOG_COLOR, fogColor);
+        glFogf(GL_FOG_DENSITY, 0.03f);
+        glHint(GL_FOG_HINT, GL_DONT_CARE);
+        glFogf(GL_FOG_START, 3.0f);
+        glFogf(GL_FOG_END, 6.0f);
+ }
 
         glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
         
