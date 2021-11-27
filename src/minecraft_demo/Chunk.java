@@ -24,11 +24,11 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Chunk {
 
-    static final int CHUNK_SIZE = 100;
+    static final int CHUNK_SIZE = 30;
     static final int CUBE_LENGTH = 1;
     static final int WATER_LEVEL = (int) (CHUNK_SIZE/2.0f);
-    static final float minPersistance = 0.09f;//(float) (CHUNK_SIZE * 0.0006);
-    static final float maxPersistance = 0.12f;//(float) (CHUNK_SIZE * 0.0015);
+    static final float minPersistance = 0.09f;
+    static final float maxPersistance = 0.12f;
     private Block[][][] Blocks;
     private int VBOVertexHandle;
     private int VBOColorHandle;
@@ -36,11 +36,10 @@ public class Chunk {
     private int VBOTextureHandle;
     private Texture texture;
     private static Random random = new Random();
-    private Random r;
-    
     private String textureFileName = "terrain2.png";
     
-    //Chunk Render Method
+    //method : render
+    //purpose: renders the pre-made mesh on to the display
     public void render() {
         glPushMatrix();
         glBindBuffer(GL_ARRAY_BUFFER, VBOVertexHandle);
@@ -54,11 +53,12 @@ public class Chunk {
         glPopMatrix();
     }
     
-    // Method to rebuild the mesh
+    //method : rebuildMesh
+    //purpose: builds a renderable chunk mesh of blocks
     public void rebuildMesh(float startX, float startY, float startZ) {
         
         float persist = minPersistance;
-        persist += maxPersistance*r.nextFloat();
+        persist += maxPersistance*random.nextFloat();
         
         int seed = (50 * random.nextInt());
         SimplexNoise noise = new SimplexNoise(CHUNK_SIZE, persist, seed);
@@ -97,6 +97,7 @@ public class Chunk {
         }
 
         //Water Placement
+        //  - place water block in any empty space below WATER_LEVEL (A.K.A. sea level)
         
         for(int x = 0; x < CHUNK_SIZE; x++)
         {
@@ -133,6 +134,8 @@ public class Chunk {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     
+    //method : Chunk
+    //purpose: Chunk class constructor
     private float[] createCubeVertexCol(float[] CubeColorArray)
     {
         float[] cubeColors = new float[CubeColorArray.length * 4 * 6];
@@ -143,6 +146,8 @@ public class Chunk {
         return cubeColors;
     }
     
+    //method : createCube
+    //purpose: returns a float[] quad positions given the x,y,and z
     public static float[] createCube(float x, float y, float z)
     {
         float offset = CUBE_LENGTH / 2.0f;
@@ -191,7 +196,11 @@ public class Chunk {
     private float[] getCubeColor(Block block) {
         return new float[] { 1, 1, 1 };
     }
-
+    //method : Chunk
+    //purpose: Chunk class constructor
+    //          - loads the texture file
+    //          - initializes the Blocks 3D array
+    //          - build the chunk mesh
     public Chunk(int startX, int startY, int startZ) {
         try{
             texture = TextureLoader.getTexture("PNG",ResourceLoader.getResourceAsStream(textureFileName));
@@ -200,39 +209,8 @@ public class Chunk {
             System.out.print("ER-ROAR!");
         }
         
-        r= new Random();
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-        /*
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
-                }
-            }
-        } 
-*/
-//        for (int x = 0; x < CHUNK_SIZE; x++) {
-//            for (int y = 0; y < CHUNK_SIZE; y++) {
-//                for (int z = 0; z < CHUNK_SIZE; z++) {
-//                    if(r.nextFloat()>0.8f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
-//                    }else if(r.nextFloat()>0.6f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
-//                    }else if(r.nextFloat()>0.4f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
-//                    }else if(r.nextFloat()>0.2f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
-//                    }else if(r.nextFloat()>0.1f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
-//                    }else if(r.nextFloat()>0.0f){
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
-//                    }else{
-//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
-//                    }
-//                }
-//            }
-//        }   
-        
+ 
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();
@@ -248,26 +226,30 @@ public class Chunk {
     public static float[] createTexCube(float x, float y, Block block, float currentY, float height) {
         float offset = (1024f/16)/1024f;
         
-//        if(currentY <= CHUNK_SIZE/15)
-//            return cubeTex(x,y,offset,15,13,15,13,15,13);
-        
         block.SetActive(true);
 
+        //if current block is one block below the highest        
         if(currentY == height-2)
-            return cubeTex(x,y,offset,3,1,3,1,3,1); // dirtz
+            return cubeTex(x,y,offset,3,1,3,1,3,1); // dirt
+        //if current block is at the highest
         else if(currentY == height-1)
         {
+            //if current block is below the sea level BUT highest block
+            //(this will allow a layer of sand between dirt and water)
             if(currentY < WATER_LEVEL)
                 return cubeTex(x,y,offset,3,2,3,2,3,2); // sand
             else
             {
                 int rand = random.nextInt(100);
                 if(rand < 60)
+                    //layer the top with grass block
                     return cubeTex(x,y,offset,3,10,4,1,3,1); // grass
                 else if(rand < 90)
-                    return cubeTex(x,y,offset,2,10,4,1,3,1);
+                    //layer the top with darker grass but much less than regular grass
+                    return cubeTex(x,y,offset,2,10,4,1,3,1); // darker grass
                 else if(rand < 99)
                 {
+                    //generate random flowers (basically grass block but flower on top)
                     rand = random.nextInt(3)+1;
                     switch(rand){
                         case 1:
@@ -284,46 +266,47 @@ public class Chunk {
             }
         }
         
-        // height = 7
         float level = currentY/height;
         
         if(level <= 0.5)
-            return cubeTex(x,y,offset,2,2,2,2,2,2);
+            return cubeTex(x,y,offset,2,2,2,2,2,2); //bedrock
         else if(level <= 0.7)
-            return cubeTex(x,y,offset,2,1,2,1,2,1);
+            return cubeTex(x,y,offset,2,1,2,1,2,1); //stone
         else if(level <= 1)
-            return cubeTex(x,y,offset,3,1,3,1,3,1);
+            return cubeTex(x,y,offset,3,1,3,1,3,1); //dirt
         else
             System.out.println("not found");
             return null; 
 
-//        switch (block.GetID()) {
-//            case 0: //Grass
-//                return cubeTex(x,y,offset,3,10,4,1,3,1);
-//            case 1: //Sand
-//                return cubeTex(x,y,offset,3,2,3,2,3,2);
-//            case 2: //Water
-//                return cubeTex(x,y,offset,15,13,15,13,15,13);
-//            case 3: //Dirt
-//                return cubeTex(x,y,offset,3,1,3,1,3,1);
-//            case 4: //Stone
-//                return cubeTex(x,y,offset,2,1,2,1,2,1);
-//            case 5: //Bedrock
-//                return cubeTex(x,y,offset,2,2,2,2,2,2);
-//            case 6: //Default
-//                return cubeTex(x,y,offset,10,10,10,10,10,10);
-//            default:
-//                System.out.println("not found");
-//                return null;
-//        }
+            /* X,Y positioning cheat sheet for these blocks
+            switch (block.GetID()) {
+                case 0: //Grass
+                    return cubeTex(x,y,offset,3,10,4,1,3,1);
+                case 1: //Sand
+                    return cubeTex(x,y,offset,3,2,3,2,3,2);
+                case 2: //Water
+                    return cubeTex(x,y,offset,15,13,15,13,15,13);
+                case 3: //Dirt
+                    return cubeTex(x,y,offset,3,1,3,1,3,1);
+                case 4: //Stone
+                    return cubeTex(x,y,offset,2,1,2,1,2,1);
+                case 5: //Bedrock
+                    return cubeTex(x,y,offset,2,2,2,2,2,2);
+                case 6: //Default
+                    return cubeTex(x,y,offset,10,10,10,10,10,10);
+                default:
+                    System.out.println("not found");
+                    return null;
+            }
+            */
         
 
     }
     
-
-    //returns the float array that will give the correct textures for a block
-    //input from calling method, xTop and yTop: coordinates of the square in the png file to get the texture for the top of the block
-    //xSide,ySide and xBottom and yBottom: simmilar to xTop and yTop
+    //method : cubeTex
+    //purpose: returns the float array that will give the correct textures for a block
+    //         input from calling method, xTop and yTop: coordinates of the square in the png file to get the texture for the top of the block
+    //         xSide,ySide and xBottom and yBottom: simmilar to xTop and yTop
     public static float[] cubeTex(float x, float y, float offset, int xTop, int yTop, int xSide, int ySide, int xBottom, int yBottom){
         return new float[] {
             // BOTTOM QUAD(DOWN=+Y)
@@ -356,22 +339,5 @@ public class Chunk {
             x + offset*(xSide-1), y + offset*(ySide-1),
             x + offset*(xSide-1), y + offset*ySide,
             x + offset*xSide, y + offset*ySide};
-    }
-    
-    public boolean IsThereBlockAtThisXY(float x, float y, float z)
-    {
-//        int x_int = (int) x;
-//        int y_int = (int) y;
-//        int z_int = (int) z;
-        
-//        Block blk = Blocks[(int) x][(int) y][(int) z];
-
-        
-        if(Blocks[(int) (x/CUBE_LENGTH)][(int) (y - (float)(CHUNK_SIZE*-1.5))/CUBE_LENGTH][(int)(z/CUBE_LENGTH)] == null)
-            return false;
-        else
-            return true;
-    }
-    
-    
+    }    
 }
